@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inscripción sustentación Parcial 3 · Ingeniería de Software II</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --rojo:#C52646; --rojo-osc:#9E1C37; --oro:#DF9C30; --oro-claro:#FBF1DF;
+    --tinta:#2A2326; --gris:#6B6266; --linea:#E6DFE1; --fondo:#FAF7F6; --blanco:#fff;
+    --ok:#1F7A4D; --ok-claro:#E5F4EC; --error:#B3261E; --error-claro:#FCE8E6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Open Sans',system-ui,sans-serif;color:var(--tinta);background:var(--fondo);line-height:1.5}
+  h1,h2,h3{font-family:'Montserrat',sans-serif;margin:0}
+  header{background:var(--rojo);color:#fff;padding:28px 20px 34px;position:relative;overflow:hidden}
+  header::after{content:"";position:absolute;left:0;right:0;bottom:0;height:6px;background:var(--oro)}
+  .contenedor{max-width:860px;margin:0 auto}
+  .institucion{font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;opacity:.85;font-weight:600}
+  header h1{font-weight:800;font-size:clamp(1.4rem,3.5vw,2rem);margin:6px 0 4px}
+  header p{margin:0;opacity:.92}
+  .cierre{margin-top:16px;display:inline-flex;gap:10px;align-items:center;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);padding:8px 14px;border-radius:999px;font-size:.9rem}
+  .cierre b{color:#FFE0A8}
+  main{padding:24px 16px 80px}
+  .aviso-demo{background:var(--oro-claro);border:1px dashed var(--oro);padding:10px 14px;border-radius:10px;font-size:.88rem;margin-bottom:18px}
+  .paso{background:var(--blanco);border:1px solid var(--linea);border-radius:16px;padding:22px;margin-bottom:18px;transition:opacity .25s, transform .25s}
+  .paso.bloqueado{opacity:.45;pointer-events:none}
+  .paso-titulo{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+  .num{width:34px;height:34px;border-radius:50%;background:var(--rojo);color:#fff;display:grid;place-items:center;font-family:'Montserrat';font-weight:800;flex:none}
+  .paso.hecho .num{background:var(--ok)}
+  .paso-titulo h2{font-size:1.1rem;font-weight:800}
+  .ayuda{color:var(--gris);font-size:.9rem;margin:-6px 0 14px 46px}
+  .grilla{display:grid;gap:12px}
+  .g4{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
+  .g2{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+  .g5{grid-template-columns:repeat(auto-fit,minmax(130px,1fr))}
+  .opcion{border:2px solid var(--linea);background:var(--blanco);border-radius:12px;padding:14px;text-align:left;cursor:pointer;font:inherit;color:inherit;transition:border-color .15s, background .15s, transform .1s}
+  .opcion:hover:not(:disabled){border-color:var(--oro);transform:translateY(-1px)}
+  .opcion.sel{border-color:var(--rojo);background:#FDF0F3}
+  .opcion:disabled{cursor:not-allowed;background:#F3F0F1;color:#A39A9E}
+  .opcion .grande{font-family:'Montserrat';font-weight:800;font-size:1.3rem}
+  .opcion .peq{font-size:.85rem;color:var(--gris)}
+  .opcion:disabled .peq{color:#B5ADB0}
+  .etiqueta{display:inline-block;font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:999px;margin-top:6px}
+  .et-libre{background:var(--ok-claro);color:var(--ok)}
+  .et-ocupada{background:#ECE6E8;color:#8C8387}
+  .lista{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:8px}
+  .est{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--linea);border-radius:10px;cursor:pointer;user-select:none}
+  .est:hover{background:#FDF8F9}
+  .est input{width:18px;height:18px;accent-color:var(--rojo);flex:none}
+  .est.sel{border-color:var(--rojo);background:#FDF0F3}
+  .est.inscrito{cursor:not-allowed;color:#A39A9E;background:#F6F3F4;text-decoration:line-through}
+  .est.inscrito:hover{background:#F6F3F4}
+  .est small{margin-left:auto;font-size:.72rem;text-decoration:none;white-space:nowrap}
+  .contador{font-weight:700;color:var(--rojo);margin-top:10px;font-size:.9rem}
+  .nota{border-radius:12px;padding:14px 16px;margin-top:14px;font-size:.93rem}
+  .nota-oro{background:var(--oro-claro);border-left:5px solid var(--oro)}
+  .nota-rojo{background:#FDF0F3;border-left:5px solid var(--rojo)}
+  .nota-error{background:var(--error-claro);border-left:5px solid var(--error);color:var(--error)}
+  input[type=url]{width:100%;padding:12px 14px;border:2px solid var(--linea);border-radius:10px;font:inherit}
+  input[type=url]:focus{outline:none;border-color:var(--oro)}
+  input[type=url].invalido{border-color:var(--error)}
+  .msg-campo{font-size:.85rem;color:var(--error);margin-top:6px;min-height:1.2em}
+  .boton{display:inline-block;background:var(--rojo);color:#fff;border:0;border-radius:12px;padding:14px 26px;font-family:'Montserrat';font-weight:800;font-size:1rem;cursor:pointer;transition:background .15s, transform .1s}
+  .boton:hover:not(:disabled){background:var(--rojo-osc);transform:translateY(-1px)}
+  .boton:disabled{background:#CFC6C9;cursor:not-allowed}
+  .boton-sec{background:transparent;color:var(--tinta);border:2px solid var(--linea)}
+  .boton-sec:hover:not(:disabled){background:#F3F0F1}
+  .acciones{text-align:center;margin-top:8px}
+  .pendientes{color:var(--gris);font-size:.88rem;margin-top:10px}
+  /* Modal */
+  .velo{position:fixed;inset:0;background:rgba(42,35,38,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:10}
+  .velo.abierto{display:flex}
+  .modal{background:#fff;border-radius:18px;max-width:520px;width:100%;padding:24px;max-height:92vh;overflow:auto;animation:sube .2s ease-out}
+  @keyframes sube{from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1}}
+  .modal h3{font-size:1.2rem;margin-bottom:12px}
+  .resumen{width:100%;border-collapse:collapse;font-size:.93rem;margin:6px 0 4px}
+  .resumen th{text-align:left;color:var(--gris);font-weight:600;padding:8px 10px 8px 0;vertical-align:top;width:34%}
+  .resumen td{padding:8px 0;border-bottom:1px solid var(--linea);word-break:break-word}
+  .check{display:flex;gap:10px;align-items:flex-start;margin-top:14px;font-size:.92rem;font-weight:600}
+  .check input{width:20px;height:20px;accent-color:var(--rojo);margin-top:2px;flex:none}
+  .fila-botones{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}
+  /* Pantallas finales */
+  .pantalla{background:#fff;border:1px solid var(--linea);border-radius:18px;padding:30px 24px;text-align:center}
+  .icono{width:70px;height:70px;border-radius:50%;display:grid;place-items:center;margin:0 auto 14px;font-size:2rem;color:#fff;font-family:'Montserrat';font-weight:800}
+  .icono.ok{background:var(--ok)} .icono.cerrado{background:var(--gris)}
+  .pantalla .resumen{max-width:480px;margin:16px auto;text-align:left}
+  .cargando{text-align:center;padding:60px 0;color:var(--gris)}
+  .spinner{width:38px;height:38px;border:4px solid var(--linea);border-top-color:var(--rojo);border-radius:50%;margin:0 auto 12px;animation:gira .8s linear infinite}
+  @keyframes gira{to{transform:rotate(360deg)}}
+  .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(120px);opacity:0;visibility:hidden;background:var(--tinta);color:#fff;padding:12px 18px;border-radius:12px;font-size:.9rem;max-width:92vw;transition:transform .3s;z-index:20}
+  .toast.visible{transform:translateX(-50%) translateY(0);opacity:1;visibility:visible}
+  footer{text-align:center;color:var(--gris);font-size:.8rem;padding:0 16px 30px}
+  @media print{header::after,.boton,footer{display:none} header{background:#fff;color:var(--tinta)}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="contenedor">
+    <div class="institucion">Universidad Libre · Ingeniería de Software II</div>
+    <h1>Inscripción a la sustentación del Parcial 3</h1>
+    <p>Registra a tu equipo, elige la modalidad de entrega y, si es presencial, tu horario.</p>
+    <div class="cierre" id="cierre">Cargando fecha de cierre…</div>
+  </div>
+</header>
+
+<main class="contenedor" id="app">
+  <div class="cargando"><div class="spinner"></div>Consultando inscripciones…</div>
+</main>
+
+<div class="velo" id="velo" role="dialog" aria-modal="true" aria-labelledby="tituloModal">
+  <div class="modal">
+    <h3 id="tituloModal">Revisa tu inscripción</h3>
+    <table class="resumen" id="resumenModal"></table>
+    <div class="nota nota-rojo"><b>Importante:</b> una vez confirmes, <b>no podrás cambiar la modalidad</b>, el horario ni los integrantes desde esta página. Cualquier corrección solo la puede hacer la docente.</div>
+    <label class="check"><input type="checkbox" id="acepto"> Revisé los datos y entiendo que la modalidad elegida es definitiva.</label>
+    <div class="nota nota-error" id="errorModal" hidden></div>
+    <div class="fila-botones">
+      <button class="boton boton-sec" id="btnVolver">Volver y corregir</button>
+      <button class="boton" id="btnConfirmar" disabled>Confirmar inscripción</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<footer>Si tienes un problema con tu inscripción, escríbele a la docente por el aula virtual.</footer>
+
+<script>
+/* =====================================================================
+   CONFIGURACIÓN: pega aquí la URL de la aplicación web de Apps Script.
+   Mientras no la pegues, la página funciona en MODO DEMOSTRACIÓN.
+   ===================================================================== */
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxEMBJhfZCON0aAm6jH2yvzAy8pcymWwFEp1rqln4UPYDvAErQ3MxUAB7GJhQn3eea_LQ/exec';
+
+const DEMO = !/^https:\/\/script\.google(usercontent)?\.com\//.test(SCRIPT_URL);
+const RE_GITHUB = /^https?:\/\/(www\.)?github\.com\/[\w.-]+\/[\w.-]+/i;
+
+/* ---------------- Modo demostración (sin servidor) ---------------- */
+const demo = (() => {
+  const h1 = ['7:15 a. m.','7:35 a. m.','7:55 a. m.','8:15 a. m.','8:35 a. m.'];
+  const h2 = ['9:00 a. m.','9:20 a. m.','9:40 a. m.','10:00 a. m.','10:20 a. m.'];
+  const cfg = {
+    SA:{dia:'Jueves 26 de noviembre',horas:h1}, SB:{dia:'Miércoles 25 de noviembre',horas:h1},
+    SC:{dia:'Miércoles 25 de noviembre',horas:h2}, SD:{dia:'Jueves 26 de noviembre',horas:h2}
+  };
+  const nombres = g => Array.from({length:8},(_,i)=>`Estudiante ${g} ${String(i+1).padStart(2,'0')}`);
+  const ins = [{grupo:'SA',integrantes:['Estudiante SA 01','Estudiante SA 02'],modalidad:'Presencial',hora:'7:15 a. m.'}];
+  const cierre = new Date('2026-11-24T23:59:59-05:00');
+  const estado = () => {
+    const grupos = {};
+    for (const g in cfg) {
+      grupos[g] = {
+        dia: cfg[g].dia,
+        horas: cfg[g].horas.map(h => ({hora:h, ocupada: ins.some(i=>i.grupo===g && i.hora===h)})),
+        estudiantes: nombres(g).map(n => ({nombre:n, inscrito: ins.some(i=>i.grupo===g && i.integrantes.includes(n))}))
+      };
+    }
+    return {ok:true, abierto:new Date()<=cierre, cierre:cierre.toISOString(),
+            cierreTexto:'martes 24 de noviembre a las 11:59 p. m.', maxIntegrantes:3, grupos};
+  };
+  const registrar = d => {
+    if (ins.some(i=>i.grupo===d.grupo && d.integrantes.some(n=>i.integrantes.includes(n))))
+      return {ok:false,error:'Uno de los integrantes ya está inscrito.'};
+    if (d.modalidad==='Presencial' && ins.some(i=>i.grupo===d.grupo && i.hora===d.hora))
+      return {ok:false,error:'El horario de las '+d.hora+' acaba de ser tomado por otro equipo. Elige otro.'};
+    ins.push({...d});
+    return {ok:true, resumen:{...d, dia: d.modalidad==='Presencial' ? cfg[d.grupo].dia : ''}};
+  };
+  return { estado: async () => estado(), registrar: async d => registrar(d) };
+})();
+
+/* ---------------- Comunicación con el servidor ---------------- */
+async function apiEstado() {
+  if (DEMO) return demo.estado();
+  const r = await fetch(SCRIPT_URL + '?t=' + Date.now(), {cache:'no-store'});
+  return r.json();
+}
+async function apiRegistrar(datos) {
+  if (DEMO) return demo.registrar(datos);
+  // text/plain evita la verificación CORS previa que Apps Script no admite
+  const r = await fetch(SCRIPT_URL, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(datos)});
+  return r.json();
+}
+
+/* ---------------- Estado de la página ---------------- */
+let est = null;            // respuesta del servidor
+const sel = { grupo:null, integrantes:new Set(), modalidad:null, hora:null, github:'' };
+let terminado = false;
+let enviando = false;
+
+const $ = s => document.querySelector(s);
+const app = $('#app');
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.classList.add('visible');
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('visible'), 4200);
+}
+
+async function cargar(silencioso) {
+  try {
+    const nuevo = await apiEstado();
+    if (!nuevo.ok) throw new Error();
+    est = nuevo;
+    depurarSeleccion(silencioso);
+    // No redibujar mientras el estudiante escribe el link (perdería el cursor); se redibuja al salir del campo.
+    const escribiendo = document.activeElement && document.activeElement.id === 'github';
+    if (!terminado && !(silencioso && escribiendo)) render();
+  } catch (e) {
+    if (!silencioso) app.innerHTML = `<div class="pantalla"><div class="icono cerrado">!</div><h2>No pudimos conectar</h2><p>Revisa tu conexión a internet y recarga la página.</p><button class="boton" onclick="location.reload()">Recargar</button></div>`;
+  }
+}
+
+// Si mientras el estudiante llenaba el formulario alguien más tomó un compañero o el horario, se libera.
+function depurarSeleccion(silencioso) {
+  if (!sel.grupo || !est.grupos[sel.grupo]) return;
+  const g = est.grupos[sel.grupo];
+  const perdidos = [...sel.integrantes].filter(n => { const e = g.estudiantes.find(x => x.nombre === n); return !e || e.inscrito; });
+  perdidos.forEach(n => sel.integrantes.delete(n));
+  if (perdidos.length && silencioso) toast('Otro equipo acaba de inscribir a: ' + perdidos.join(', ') + '.');
+  if (sel.hora && g.horas.find(h => h.hora === sel.hora)?.ocupada) {
+    if (silencioso) toast('El horario de las ' + sel.hora + ' acaba de ocuparse. Elige otro.');
+    sel.hora = null;
+  }
+}
+
+function actualizarCierre() {
+  if (!est) return;
+  const falta = new Date(est.cierre) - new Date();
+  let txt;
+  if (falta <= 0) txt = 'Inscripciones cerradas';
+  else {
+    const d = Math.floor(falta/864e5), h = Math.floor(falta%864e5/36e5), m = Math.floor(falta%36e5/6e4);
+    txt = `Cierra el <b>${esc(est.cierreTexto)}</b> · faltan ${d ? d+' d ' : ''}${h} h ${m} min`;
+  }
+  $('#cierre').innerHTML = txt;
+}
+
+function faltantes() {
+  return [
+    !sel.grupo && 'el grupo',
+    !sel.integrantes.size && 'los integrantes',
+    !sel.modalidad ? 'la modalidad' : (sel.modalidad === 'Presencial' && !sel.hora ? 'el horario' : false),
+    !RE_GITHUB.test(sel.github.trim()) && 'el link de GitHub'
+  ].filter(Boolean);
+}
+
+/* ---------------- Render ---------------- */
+function render() {
+  actualizarCierre();
+  if (!est.abierto || new Date(est.cierre) < new Date()) return renderCerrado();
+
+  const g = sel.grupo ? est.grupos[sel.grupo] : null;
+  const p1 = !!sel.grupo;
+  const p2 = sel.integrantes.size > 0;
+  const p3 = sel.modalidad === 'Video grabado' || (sel.modalidad === 'Presencial' && !!sel.hora);
+  const p4 = RE_GITHUB.test(sel.github.trim());
+  const max = est.maxIntegrantes;
+
+  let html = DEMO ? `<div class="aviso-demo"><b>Modo demostración.</b> Los datos no se guardan. Para activar la base de datos, pega la URL de Apps Script en la constante SCRIPT_URL.</div>` : '';
+
+  // Paso 1: grupo
+  html += `<section class="paso ${p1?'hecho':''}">
+    <div class="paso-titulo"><span class="num">1</span><h2>¿A qué grupo perteneces?</h2></div>
+    <div class="grilla g4">${Object.keys(est.grupos).map(k => {
+      const x = est.grupos[k]; const libres = x.horas.filter(h=>!h.ocupada).length;
+      return `<button class="opcion ${sel.grupo===k?'sel':''}" data-grupo="${k}">
+        <div class="grande">${k}</div>
+        <div class="peq">${esc(x.dia)}</div>
+        <div class="peq">${esc(x.horas[0].hora)} a ${esc(x.horas[x.horas.length-1].hora)}</div>
+        <span class="etiqueta ${libres?'et-libre':'et-ocupada'}">${libres} de ${x.horas.length} horarios libres</span>
+      </button>`;}).join('')}</div>
+  </section>`;
+
+  // Paso 2: integrantes
+  html += `<section class="paso ${p1?'':'bloqueado'} ${p2?'hecho':''}">
+    <div class="paso-titulo"><span class="num">2</span><h2>Integrantes del equipo</h2></div>
+    <p class="ayuda">Marca de 1 a ${max} estudiantes${g?` del grupo ${sel.grupo}`:''}. Los que aparecen tachados ya están inscritos en otro equipo.</p>
+    ${g ? (g.estudiantes.length ? `<div class="lista">${g.estudiantes.map(e => {
+        const marcado = sel.integrantes.has(e.nombre);
+        const lleno = !marcado && sel.integrantes.size >= max;
+        return `<label class="est ${e.inscrito?'inscrito':''} ${marcado?'sel':''}">
+          <input type="checkbox" data-est="${esc(e.nombre)}" ${marcado?'checked':''} ${e.inscrito||lleno?'disabled':''}>
+          <span>${esc(e.nombre)}</span>${e.inscrito?'<small>Ya inscrito</small>':''}
+        </label>`;}).join('')}</div>
+        <div class="contador">${sel.integrantes.size} de ${max} seleccionados</div>`
+      : `<div class="nota nota-oro">Aún no hay estudiantes cargados para este grupo. Avísale a la docente.</div>`)
+    : `<p class="ayuda">Primero elige tu grupo.</p>`}
+    <div class="nota nota-oro">Si no apareces en la lista, no te inscribas con otro nombre: escríbele a la docente.</div>
+  </section>`;
+
+  // Paso 3: modalidad
+  html += `<section class="paso ${p2?'':'bloqueado'} ${p3?'hecho':''}">
+    <div class="paso-titulo"><span class="num">3</span><h2>Modalidad de entrega</h2></div>
+    <p class="ayuda">Elige con cuidado: después de confirmar no podrás cambiarla.</p>
+    <div class="grilla g2">
+      <button class="opcion ${sel.modalidad==='Presencial'?'sel':''}" data-mod="Presencial">
+        <div class="grande">Presencial</div><div class="peq">Sustentan en el salón en un turno de 20 minutos.</div>
+      </button>
+      <button class="opcion ${sel.modalidad==='Video grabado'?'sel':''}" data-mod="Video grabado">
+        <div class="grande">Video grabado</div><div class="peq">Graban la sustentación y entregan el link del video.</div>
+      </button>
+    </div>
+    ${sel.modalidad==='Presencial' && g ? `
+      <h3 style="font-size:1rem;margin:20px 0 4px">Horario · ${esc(g.dia)}</h3>
+      <p class="pendientes" style="margin:0 0 10px">Cada turno es de 20 minutos y es para un solo equipo.</p>
+      <div class="grilla g5">${g.horas.map(h => `
+        <button class="opcion ${sel.hora===h.hora?'sel':''}" data-hora="${esc(h.hora)}" ${h.ocupada?'disabled':''}>
+          <div class="grande" style="font-size:1.1rem">${esc(h.hora)}</div>
+          <span class="etiqueta ${h.ocupada?'et-ocupada':'et-libre'}">${h.ocupada?'Ocupado':'Disponible'}</span>
+        </button>`).join('')}</div>
+      ${g.horas.every(h=>h.ocupada) ? `<div class="nota nota-error">Todos los horarios presenciales de tu grupo están ocupados. Elige la modalidad de video grabado o escríbele a la docente.</div>` : ''}
+      <div class="nota nota-oro">Lleguen al salón unos minutos antes de su turno con el proyecto listo para ejecutar.</div>` : ''}
+    ${sel.modalidad==='Video grabado' ? `
+      <div class="nota nota-rojo"><b>Recuerda:</b> deben <b>cargar el link del video en la tarea del Parcial 3</b> del aula virtual. Esta inscripción no reemplaza esa entrega.</div>` : ''}
+  </section>`;
+
+  // Paso 4: GitHub
+  const ghMal = sel.github.trim() && !p4;
+  html += `<section class="paso ${p3?'':'bloqueado'} ${p4?'hecho':''}">
+    <div class="paso-titulo"><span class="num">4</span><h2>Repositorio de GitHub</h2></div>
+    <p class="ayuda">Pega el link del repositorio del proyecto (debe ser público o estar compartido con la docente).</p>
+    <input type="url" id="github" placeholder="https://github.com/usuario/proyecto" value="${esc(sel.github)}" class="${ghMal?'invalido':''}" autocomplete="off">
+    <div class="msg-campo" id="msgGithub">${ghMal?'El link debe tener la forma https://github.com/usuario/proyecto':''}</div>
+  </section>`;
+
+  const faltan = faltantes();
+  html += `<div class="acciones">
+    <button class="boton" id="btnRevisar" ${faltan.length?'disabled':''}>Revisar y enviar</button>
+    <div class="pendientes" id="pendientes">${faltan.length ? 'Falta: ' + faltan.join(', ') + '.' : ''}</div>
+  </div>`;
+
+  app.innerHTML = html;
+  conectarEventos();
+}
+
+function conectarEventos() {
+  app.querySelectorAll('[data-grupo]').forEach(b => b.onclick = () => {
+    if (sel.grupo !== b.dataset.grupo) { sel.grupo = b.dataset.grupo; sel.integrantes.clear(); sel.hora = null; }
+    render();
+  });
+  app.querySelectorAll('[data-est]').forEach(c => c.onchange = () => {
+    c.checked ? sel.integrantes.add(c.dataset.est) : sel.integrantes.delete(c.dataset.est);
+    render();
+  });
+  app.querySelectorAll('[data-mod]').forEach(b => b.onclick = () => {
+    sel.modalidad = b.dataset.mod; if (sel.modalidad !== 'Presencial') sel.hora = null; render();
+  });
+  app.querySelectorAll('[data-hora]').forEach(b => b.onclick = () => { sel.hora = b.dataset.hora; render(); });
+  const gh = $('#github');
+  if (gh) {
+    gh.oninput = () => {
+      sel.github = gh.value;
+      const ok = RE_GITHUB.test(gh.value.trim());
+      gh.classList.toggle('invalido', !!gh.value.trim() && !ok);
+      $('#msgGithub').textContent = gh.value.trim() && !ok ? 'El link debe tener la forma https://github.com/usuario/proyecto' : '';
+      const f = faltantes();
+      $('#btnRevisar').disabled = f.length > 0;
+      $('#pendientes').textContent = f.length ? 'Falta: ' + f.join(', ') + '.' : '';
+    };
+    gh.onblur = () => render();
+  }
+  const rev = $('#btnRevisar');
+  if (rev) rev.onclick = abrirModal;
+}
+
+function filasResumen(r) {
+  return `<tr><th>Grupo</th><td>${esc(r.grupo)}</td></tr>
+    <tr><th>Integrantes</th><td>${[...r.integrantes].map(esc).join('<br>')}</td></tr>
+    <tr><th>Modalidad</th><td>${esc(r.modalidad)}</td></tr>
+    ${r.modalidad==='Presencial' ? `<tr><th>Día y hora</th><td>${esc(r.dia)} · ${esc(r.hora)}</td></tr>` : ''}
+    <tr><th>GitHub</th><td>${esc(r.github)}</td></tr>`;
+}
+
+function abrirModal() {
+  const g = est.grupos[sel.grupo];
+  $('#resumenModal').innerHTML = filasResumen({...sel, github: sel.github.trim(), dia: g.dia});
+  $('#acepto').checked = false;
+  $('#btnConfirmar').disabled = true;
+  $('#errorModal').hidden = true;
+  $('#velo').classList.add('abierto');
+}
+function cerrarModal() { $('#velo').classList.remove('abierto'); }
+
+$('#acepto').onchange = e => { $('#btnConfirmar').disabled = !e.target.checked || enviando; };
+$('#btnVolver').onclick = cerrarModal;
+$('#btnConfirmar').onclick = async () => {
+  enviando = true;
+  const btn = $('#btnConfirmar');
+  btn.disabled = true; btn.textContent = 'Enviando…';
+  try {
+    const r = await apiRegistrar({
+      grupo: sel.grupo, integrantes: [...sel.integrantes], modalidad: sel.modalidad,
+      hora: sel.modalidad === 'Presencial' ? sel.hora : '', github: sel.github.trim()
+    });
+    if (r.ok) { cerrarModal(); renderExito(r.resumen); }
+    else {
+      $('#errorModal').textContent = r.error; $('#errorModal').hidden = false;
+      await cargar(false); // trae lo último y libera lo que ya no está disponible
+    }
+  } catch (e) {
+    $('#errorModal').textContent = 'No se pudo enviar. Revisa tu conexión e intenta de nuevo.';
+    $('#errorModal').hidden = false;
+  } finally {
+    enviando = false; btn.textContent = 'Confirmar inscripción';
+    btn.disabled = !$('#acepto').checked;
+  }
+};
+
+function renderExito(r) {
+  terminado = true;
+  app.innerHTML = `<div class="pantalla">
+    <div class="icono ok">✓</div>
+    <h2>Inscripción registrada</h2>
+    <p>Tu equipo quedó inscrito. Toma un pantallazo de esta confirmación.</p>
+    <table class="resumen">${filasResumen(r)}</table>
+    ${r.modalidad==='Video grabado'
+      ? `<div class="nota nota-rojo" style="text-align:left;max-width:480px;margin:0 auto"><b>No olvides:</b> cargar el link del video en la tarea del Parcial 3 del aula virtual.</div>`
+      : `<div class="nota nota-oro" style="text-align:left;max-width:480px;margin:0 auto">Te esperamos el <b>${esc(r.dia.toLowerCase())}</b> a las <b>${esc(r.hora)}</b>. Lleguen unos minutos antes.</div>`}
+    <p class="pendientes">La modalidad ya no se puede cambiar. Si hay un error, escríbele a la docente.</p>
+  </div>`;
+}
+
+function renderCerrado() {
+  terminado = true;
+  app.innerHTML = `<div class="pantalla">
+    <div class="icono cerrado">✕</div>
+    <h2>Las inscripciones están cerradas</h2>
+    <p>El plazo terminó el ${esc(est.cierreTexto)}. Si tienes algún inconveniente, comunícate con la docente.</p>
+  </div>`;
+}
+
+cargar(false);
+setInterval(() => { if (!terminado && !enviando) cargar(true); }, 30000);
+setInterval(actualizarCierre, 30000);
+</script>
+</body>
+</html>
