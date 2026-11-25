@@ -136,6 +136,8 @@
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxEMBJhfZCON0aAm6jH2yvzAy8pcymWwFEp1rqln4UPYDvAErQ3MxUAB7GJhQn3eea_LQ/exec';
 
 const DEMO = !/^https:\/\/script\.google(usercontent)?\.com\//.test(SCRIPT_URL);
+// La sustentación presencial está cerrada: solo se acepta video grabado.
+const PRESENCIAL_HABILITADA = false;
 const RE_GITHUB = /^https?:\/\/(www\.)?github\.com\/[\w.-]+\/[\w.-]+/i;
 
 /* ---------------- Modo demostración (sin servidor) ---------------- */
@@ -148,7 +150,7 @@ const demo = (() => {
   };
   const nombres = g => Array.from({length:8},(_,i)=>`Estudiante ${g} ${String(i+1).padStart(2,'0')}`);
   const ins = [{grupo:'SA',integrantes:['Estudiante SA 01','Estudiante SA 02'],modalidad:'Presencial',hora:'7:15 a. m.'}];
-  const cierre = new Date('2026-11-24T23:59:59-05:00');
+  const cierre = new Date('2026-11-25T23:59:59-05:00');
   const estado = () => {
     const grupos = {};
     for (const g in cfg) {
@@ -159,7 +161,7 @@ const demo = (() => {
       };
     }
     return {ok:true, abierto:new Date()<=cierre, cierre:cierre.toISOString(),
-            cierreTexto:'martes 24 de noviembre a las 11:59 p. m.', maxIntegrantes:3, grupos};
+            cierreTexto:'miércoles 25 de noviembre a las 11:59 p. m.', maxIntegrantes:3, presencialHabilitada:false, grupos};
   };
   const registrar = d => {
     if (ins.some(i=>i.grupo===d.grupo && d.integrantes.some(n=>i.integrantes.includes(n))))
@@ -259,6 +261,8 @@ function render() {
   const p3 = sel.modalidad === 'Video grabado' || (sel.modalidad === 'Presencial' && !!sel.hora);
   const p4 = RE_GITHUB.test(sel.github.trim());
   const max = est.maxIntegrantes;
+  const presencialOk = PRESENCIAL_HABILITADA && est.presencialHabilitada !== false;
+  if (!presencialOk && sel.modalidad === 'Presencial') { sel.modalidad = null; sel.hora = null; }
 
   let html = DEMO ? `<div class="aviso-demo"><b>Modo demostración.</b> Los datos no se guardan. Para activar la base de datos, pega la URL de Apps Script en la constante SCRIPT_URL.</div>` : '';
 
@@ -296,9 +300,11 @@ function render() {
   html += `<section class="paso ${p2?'':'bloqueado'} ${p3?'hecho':''}">
     <div class="paso-titulo"><span class="num">3</span><h2>Modalidad de entrega</h2></div>
     <p class="ayuda">Elige con cuidado: después de confirmar no podrás cambiarla.</p>
+    ${presencialOk?'':'<div class="nota nota-oro" style="margin:0 0 14px">La sustentación presencial ya no tiene cupos. Todos los equipos que se inscriban ahora deben sustentar por <b>video grabado</b>.</div>'}
     <div class="grilla g2">
-      <button class="opcion ${sel.modalidad==='Presencial'?'sel':''}" data-mod="Presencial">
-        <div class="grande">Presencial</div><div class="peq">Sustentan en el salón en un turno de 20 minutos.</div>
+      <button class="opcion ${sel.modalidad==='Presencial'?'sel':''}" data-mod="Presencial" ${presencialOk?'':'disabled'}>
+        <div class="grande">Presencial</div><div class="peq">${presencialOk?'Sustentan en el salón en un turno de 20 minutos.':'Los cupos presenciales están cerrados.'}</div>
+        ${presencialOk?'':'<span class="etiqueta et-ocupada">No disponible</span>'}
       </button>
       <button class="opcion ${sel.modalidad==='Video grabado'?'sel':''}" data-mod="Video grabado">
         <div class="grande">Video grabado</div><div class="peq">Graban la sustentación y entregan el link del video.</div>
